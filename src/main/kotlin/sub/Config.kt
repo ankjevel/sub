@@ -1,9 +1,9 @@
 package sub
 
 import com.natpryce.konfig.*
-import com.natpryce.konfig.ConfigurationProperties as Props
 import java.io.File
 import java.util.*
+import com.natpryce.konfig.ConfigurationProperties as Props
 
 private val config =
     Props.fromOptionalFile(
@@ -17,27 +17,46 @@ private val config =
         }
     )
 
-private object Defaults {
+private object Mappings {
     val env = Key("env", stringType)
     val redisHost = Key("redis.host", stringType)
     val redisPort = Key("redis.port", intType)
     val redisChannel = Key("redis.channel", stringType)
+    val redisTTLProcess = Key("redis.ttl.process", intType)
+    val redisTTLUsr = Key("redis.ttl.usr", intType)
+    val redisKeysProcess = Key("redis.keys.process", stringType)
+    val redisKeysUsr = Key("redis.keys.usr", stringType)
+    val firebaseTopic = Key("firebase.topic", stringType)
     val ipInfoToken = Key("ipinfo.token", stringType)
     val location = Key("location", stringType)
 }
 
 object Config {
     object Redis {
-        val host = config[Defaults.redisHost]
-        val port = config[Defaults.redisPort]
-        val channel = config[Defaults.redisChannel]
+        val host = config[Mappings.redisHost]
+        val port = config[Mappings.redisPort]
+        val channel = config[Mappings.redisChannel]
+
+        object TTL {
+            val process = config[Mappings.redisTTLProcess]
+            val usr = config[Mappings.redisTTLUsr]
+        }
+
+        object Keys {
+            val process = config[Mappings.redisKeysProcess]
+            val usr = config[Mappings.redisKeysUsr]
+        }
     }
 
     object IPInfo {
-        val token = config[Defaults.ipInfoToken]
+        val token = config[Mappings.ipInfoToken]
     }
 
-    val env = config[Defaults.env]
+    object Firebase {
+        val topic = config[Mappings.firebaseTopic]
+    }
 
-    val location = config[Defaults.location]
+    val env = config[Mappings.env]
+
+    val location = config[Mappings.location]
 }

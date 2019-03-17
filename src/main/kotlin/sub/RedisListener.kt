@@ -1,16 +1,17 @@
 package sub
 
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.*
 import org.json.JSONException
 import org.json.JSONObject
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPubSub
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.*
+import kotlin.concurrent.thread
 
 class RedisListener {
-    fun run() {
-        Thread(Runnable {
+    init {
+        thread(name = "RedisListener", start = true) {
             sub.subscribe(
                 object : JedisPubSub() {
                     override fun onMessage(channel: String, message: String) {
@@ -24,39 +25,22 @@ class RedisListener {
                 Config.Redis.channel
             )
             sub.quit()
-        }).start()
+        }
     }
 
     private fun handleMessage(ip: String) {
         println("Message received: \"$ip\"")
 
         val uuid = "${UUID.randomUUID()}"
+        val keyProcess = "${Config.Redis.Keys.process}:$ip"
+        val keyUsr = "${Config.Redis.Keys.usr}:$ip"
 
-        val keys = hashMapOf(
-            "process" to "processing:$ip",
-            "usr" to "usr:$ip"
-        )
-
-        val usrMeta = query.hmget(keys["usrMeta"],
-            "ip",
-            "uuid",
-            "org",
-            "city",
-            "region",
-            "base",
-            "allow",
-            "deny",
-            "status"
-        )
-
-        println(usrMeta)
-
-        if ((query.get(keys["process"]) != null) or (!query.hmget(keys["usr"], "uuid").isEmpty())) {
+        if ((query.get(keyProcess) != null) or (!query.hmget(keyUsr, "uuid").none { it != null })) {
             return
         }
 
-        query.set(keys["process"], uuid)
-        query.expire(keys["process"], 10) // 120
+        query.set(keyProcess, uuid)
+        query.expire(keyProcess, Config.Redis.TTL.process)
 
         val res: String
         try {
@@ -93,11 +77,10 @@ class RedisListener {
             "uuid" to uuid
         )
 
-        query.hmset(keys["usr"], meta)
-        query.expire(keys["usr"], 10) // 86400
+        query.hmset(keyUsr, meta)
+        query.expire(keyUsr, Config.Redis.TTL.usr)
 
-        // println(meta)
-        println(json)
+        PushNotification.sendNotification(meta)
     }
 
     companion object {
