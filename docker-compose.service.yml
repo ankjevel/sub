@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  service:
+    build: .
+    environment:
+      REDIS_HOST: redis
+    env_file:
+      ./docker.env
+    volumes:
+      - ./src/main/resources/firebase.json:/app/src/main/resources/firebase.json
+    networks:
+      - service
+
+networks:
+  service:

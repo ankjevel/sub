@@ -8,3 +8,8 @@ services:
         published: 6379
         protocol: tcp
         mode: host
+    networks:
+      - service
+
+networks:
+  service:

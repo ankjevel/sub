@@ -19,9 +19,9 @@ gradle-app.setting
 .classpath
 .project
 .settings
-overrides.properties
+src/main/resources/overrides.properties
 .idea
 *.iml
-firebase.json
+src/main/resources/firebase.json
 docker.env
 out
