@@ -1,11 +1,8 @@
 package sub
 
-import org.json.JSONException
-import org.json.JSONObject
-import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisPubSub
-import java.net.HttpURLConnection
-import java.net.URL
+import org.json.*
+import redis.clients.jedis.*
+import java.net.*
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -29,18 +26,21 @@ class RedisListener {
     }
 
     private fun handleMessage(ip: String) {
-        println("Message received: \"$ip\"")
-
         val uuid = "${UUID.randomUUID()}"
         val keyProcess = "${Config.Redis.Keys.process}:$ip"
         val keyUsr = "${Config.Redis.Keys.usr}:$ip"
+        val keyAllow = "${Config.Redis.Keys.allow}:$uuid"
 
         if ((query.get(keyProcess) != null) or (!query.hmget(keyUsr, "uuid").none { it != null })) {
             return
         }
 
+        println("Message received: \"$ip\"")
+
         query.set(keyProcess, uuid)
         query.expire(keyProcess, Config.Redis.TTL.process)
+        query.set(keyAllow, ip)
+        query.expire(keyAllow, Config.Redis.TTL.allow)
 
         val res: String
         try {
@@ -81,6 +81,8 @@ class RedisListener {
         query.expire(keyUsr, Config.Redis.TTL.usr)
 
         PushNotification.sendNotification(meta)
+
+        query.del(keyProcess)
     }
 
     companion object {
