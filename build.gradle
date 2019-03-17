@@ -14,7 +14,8 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
 
     compile group: 'redis.clients', name: 'jedis', version: '3.0.1'
-    compile "com.natpryce:konfig:1.6.10.0"
+    compile 'com.natpryce:konfig:1.6.10.0'
+    compile group: 'org.json', name: 'json', version: '20180813'
 }
 
 mainClassName = 'sub.AppKt'

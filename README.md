@@ -1,4 +1,4 @@
-# Subscriber
+# sub
 
 ```sh
 # to start
