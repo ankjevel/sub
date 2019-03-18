@@ -29,6 +29,7 @@ private object Mappings {
     val redisKeysUsr = Key("redis.keys.usr", stringType)
     val redisKeysAllow = Key("redis.keys.allow", stringType)
     val firebaseTopic = Key("firebase.topic", stringType)
+    val firebaseCredentials = Key("firebase.credentials", stringType)
     val ipInfoToken = Key("ipinfo.token", stringType)
     val location = Key("location", stringType)
 }
@@ -58,6 +59,7 @@ object Config {
 
     object Firebase {
         val topic = config[Mappings.firebaseTopic]
+        val credentials = config[Mappings.firebaseCredentials]
     }
 
     val env = config[Mappings.env]

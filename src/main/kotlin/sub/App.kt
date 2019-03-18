@@ -12,7 +12,7 @@ class App {
                 setCredentials(
                     GoogleCredentials.fromStream(
                         FileInputStream(
-                            "src/main/resources/firebase.json"
+                            Config.Firebase.credentials
                         )
                     )
                 )
