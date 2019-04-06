@@ -13,6 +13,10 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
 
+    compile group: 'org.slf4j',
+        name: 'slf4j-simple',
+        version: '1.7.25'
+
     compile group: 'redis.clients',
         name: 'jedis',
         version: '3.0.1'
