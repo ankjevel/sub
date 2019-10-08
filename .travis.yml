@@ -23,10 +23,14 @@ jobs:
         - docker build -t $REPO:latest .
         - docker push $REPO:latest
 
-    - stage: build_tag
+    - stage: build_and_deploy_tag
       language: minimal
       env:
       - REPO=ankjevel/subscriber
+      - NAMESPACE="subscriber"
+      - DEPLOYMENT="listener"
+      - CONTAINER="listener"
+      - DEPLOY_SCRIPT="https://gist.githubusercontent.com/ankjevel/fc444cdb248287a97242ced271ece388/raw/69f469562ebe46ef15e066fc574d5d865a5e83ee/deploy.sh"
       script:
         - export TAG="${TRAVIS_TAG/v/}"
         - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
@@ -34,12 +38,13 @@ jobs:
         - docker tag $REPO:latest-tag-release $REPO:$TAG
         - docker push $REPO:latest-tag-release
         - docker push $REPO:$TAG
+        - source <(curl "$DEPLOY_SCRIPT" -s 2>&1)
 
 stages:
   - name: test
   - name: build
     if: branch = master AND type != pull_request AND tag !~ /^v/
-  - name: build_tag
+  - name: build_and_deploy_tag
     if: tag =~ /^v/
 
 notifications:

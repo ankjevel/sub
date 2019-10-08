@@ -9,6 +9,8 @@ import kotlin.concurrent.thread
 class RedisListener {
     init {
         thread(name = "RedisListener", start = true) {
+            println("Started listener")
+
             sub.subscribe(
                 object : JedisPubSub() {
                     override fun onMessage(channel: String, message: String) {
