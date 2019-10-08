@@ -3,7 +3,6 @@ jobs:
     - stage: test
       language: java
       dist: xenial
-      jdk: oraclejdk8
       sudo: false
       script:
         - ./gradlew test
