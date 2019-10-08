@@ -20,16 +20,18 @@ jobs:
 
     - stage: build
       language: minimal
+      env:
+       - REPO=ankjevel/subscriber
       script:
         - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-        - export REPO="${TRAVIS_REPO_SLUG,,}"
         - docker build -t $REPO:latest .
         - docker push $REPO:latest
 
     - stage: build_tag
       language: minimal
+      env:
+      - REPO=ankjevel/subscriber
       script:
-        - export REPO="${TRAVIS_REPO_SLUG,,}"
         - export TAG="${TRAVIS_TAG/v/}"
         - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
         - docker build -t $REPO:latest-tag-release .
