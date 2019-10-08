@@ -4,19 +4,9 @@ jobs:
       language: java
       jdk:
         - oraclejdk8
-      install: true
-      before_script:
-        - export PATH=$TRAVIS_BUILD_DIR/bin:$PATH
+      sudo: false
       script:
         - ./gradlew test
-      before_cache:
-        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-      cache:
-        bundler: true
-        directories:
-          - $HOME/.gradle/caches/
-          - $HOME/.gradle/wrapper/
 
     - stage: build
       language: minimal
