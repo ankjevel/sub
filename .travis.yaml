@@ -1,0 +1,48 @@
+jobs:
+  include:
+    - stage: test
+      language: java
+      jdk:
+        - oraclejdk8
+      install: true
+      before_script:
+        - export PATH=$TRAVIS_BUILD_DIR/bin:$PATH
+      script:
+        - ./gradlew test
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        bundler: true
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+
+    - stage: build
+      language: minimal
+      script:
+        - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+        - export REPO="${TRAVIS_REPO_SLUG,,}"
+        - docker build -t $REPO:latest .
+        - docker push $REPO:latest
+
+    - stage: build_tag
+      language: minimal
+      script:
+        - export REPO="${TRAVIS_REPO_SLUG,,}"
+        - export TAG="${TRAVIS_TAG/v/}"
+        - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+        - docker build -t $REPO:latest-tag-release .
+        - docker tag $REPO:latest-tag-release $REPO:$TAG
+        - docker push $REPO:latest-tag-release
+        - docker push $REPO:$TAG
+
+stages:
+  - name: test
+  - name: build
+    if: branch = master AND type != pull_request AND tag !~ /^v/
+  - name: build_tag
+    if: tag =~ /^v/
+
+notifications:
+  email: false
